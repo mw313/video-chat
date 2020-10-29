@@ -4,9 +4,7 @@ error_reporting(E_ERROR);
 ini_set('display_errors', 1);
 
 class Reports{
-    private static $courses;
-    private static $current;
-    private static $messages;
+    
 
     static public function routing(){
 
@@ -42,28 +40,28 @@ class Reports{
     }
 
     static public function displayMenu(){
-        self::view("views/modules/menu.php");
+        Tools::view("views/modules/menu.php");
     }
 
     static public function displayActivation(){
         $courses = self::getOnlineCourses();
         $modal = self::displayModal();
         // print_r($courses);
-        self::view("views/modules/activation.php", compact('courses', 'modal'));
+        Tools::view("views/modules/activation.php", compact('courses', 'modal'));
     }
 
     static public function displayCalendar(){
         $sessions = self::getCourseSessions();
         $modal = self::displayModal();
         // print_r($courses);
-        self::view("views/modules/courseSessions.php", compact('sessions', 'modal'));
+        Tools::view("views/modules/courseSessions.php", compact('sessions', 'modal'));
     }
 
     static public function displayTalfigh(){
         $courses = self::getOnlineCourses();
         $modal = self::displayModal();
         // print_r($courses);
-        self::view("views/modules/activation.php", compact('courses', 'modal'));
+        Tools::view("views/modules/activation.php", compact('courses', 'modal'));
     }
 
     static public function displayReport(){
@@ -72,7 +70,7 @@ class Reports{
         $sessions = self::getSessionsPresence($sessions);
         $modal = self::displayModal();
         // print_r($courses);
-        self::view("views/modules/coursePresence.php", compact('sessions', 'modal'));
+        Tools::view("views/modules/coursePresence.php", compact('sessions', 'modal'));
     }
 
     static public function displayModal(){
@@ -84,7 +82,7 @@ class Reports{
         $title = "پیغام سیستم";
         // print_r($courses);
         if($message != "")
-            $result = self::view("views/modules/modal.php", compact('message', 'title'), false);
+            $result = Tools::view("views/modules/modal.php", compact('message', 'title'), false);
         else
             $result = "";
         return $result;
@@ -93,10 +91,10 @@ class Reports{
     static function getAllCourseName(){
         $query = "SELECT `title`, `code` 
                     FROM `course`";
-        self::$courses = array();
+        Tools::$courses = array();
         $result = api_sql_query($query, __FILE__, __LINE__);
         while($data = mysql_fetch_assoc($result)){
-            self::$courses[$data['code']] = $data['title'];
+            Tools::$courses[$data['code']] = $data['title'];
         }
     }
 
@@ -127,7 +125,7 @@ class Reports{
             $result1 = api_sql_query($query1, __FILE__, __LINE__);
             $data1 = mysql_fetch_assoc($result1);
             $data['status'] = $data1['visibility'];
-            $data['title'] = self::$courses[$data['cs_course_id']];
+            $data['title'] = Tools::$courses[$data['cs_course_id']];
             $data['childs'] = array();
             $courses[$data['cs_course_id']] = $data;
         }
@@ -145,9 +143,9 @@ class Reports{
         $result = api_sql_query($query, __FILE__, __LINE__);
         while($data = mysql_fetch_assoc($result)){
             $parent = Tools::getCorrectCode($data['parent_code']);
-            $child = Tools::getCorrectCode($data['child_code']);
-            $data['code'] = $child;
-            $data['title'] = self::$courses[$child];
+            $child  = Tools::getCorrectCode($data['child_code']);
+            $data['code']  = $child;
+            $data['title'] = Tools::$courses[$child];
             $courses[$parent]['childs'][] = $data;
         }
         // print_r($courses);
@@ -204,11 +202,11 @@ class Reports{
             'parent'=>array());
         
         $info['course']['code'] = $course;
-        $info['course']['title'] = self::$courses[$course];
+        $info['course']['title'] = Tools::$courses[$course];
         $code = Tools::getParent($course, $_POST['year'], $_POST['semester']);
         $code = Tools::getCorrectCode($code);
         $info['parent']['code'] = $code;
-        $info['parent']['title'] = self::$courses[$code];
+        $info['parent']['title'] = Tools::$courses[$code];
 
         if($group != "")
         $groupCondition = "AND `cs_group` = '$group'";
@@ -246,7 +244,7 @@ class Reports{
         $i = 0;
         foreach($sessions['sessions'] as $session){
             $hour_from = Tools::addHours($session['cs_start'], '00:15:00', "minus");
-            $hour_to = Tools::addHours($session['cs_start'], '00:20:00');
+            $hour_to   = Tools::addHours($session['cs_start'], '00:20:00');
 
             $sql = "SELECT count(DISTINCT(`user_id`)) as `number` FROM `chat_presence`
                         WHERE 
@@ -258,7 +256,7 @@ class Reports{
                         ";
             // echo $sql."<br/>";
             $result = api_sql_query($sql, __FILE__, __LINE__);
-            $data = mysql_fetch_assoc($result);
+            $data   = mysql_fetch_assoc($result);
             $sessions['sessions'][$i]['count'] = $data['number'];
             $sessions['sessions'][$i]['count_persent'] = "% ".round($data['number']/count($users)*100, 1);
             $i++;
@@ -333,13 +331,11 @@ class Reports{
     static private function saveSession(){
         if(!isset($_POST['newSession'])) return;
 
-        $code = Tools::getParent($_POST['code'], $_POST['year'], $_POST['semester']);
-        $code = Tools::getCorrectCode($code);
+        $code     = Tools::getParent($_POST['code'], $_POST['year'], $_POST['semester']);
+        $code     = Tools::getCorrectCode($code);
         $lessCode = Tools::getLessCode($code);
-        $end = Tools::addHours($_POST['start'], $_POST['length']);
-        $date = Tools::getEnNumbers($_POST['date']);
-        // echo $end;
-        // exit();
+        $end      = Tools::addHours($_POST['start'], $_POST['length']);
+        $date     = Tools::getEnNumbers($_POST['date']);
 
         $sql = "INSERT INTO `chat_sessions` 
                     (`cs_course_id`, `cs_year`, `cs_semester`, `cs_group`, `cs_date`, `cs_start`, `cs_length`, `cs_status`, `cs_end`, `lesCode`)
@@ -384,7 +380,7 @@ class Reports{
             $parent = Tools::getCorrectCode($data['parent_code']);
             $child = Tools::getCorrectCode($data['child_code']);
             $data['code'] = $child;
-            $data['title'] = self::$courses[$child];
+            $data['title'] = Tools::$courses[$child];
             $merged[] = $data;
         }
 

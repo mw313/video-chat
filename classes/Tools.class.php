@@ -1,6 +1,36 @@
 <?php
 
 class Tools{
+    public static $courses;
+    public static $current;
+    public static $messages;
+
+    static function getParentCode($course)
+    {
+        $parentCode = "";
+        $query = "SELECT `parent_code` FROM chat_course_merge
+                    JOIN `current_semester` ON
+                    chat_course_merge.`year` = `current_semester`.`year` AND chat_course_merge.`semester` = `current_semester`.`semester`
+                WHERE child_code = '$course' and active = '1'";    
+        
+        $result = api_sql_query($query, __FILE__, __LINE__);
+        $data   = mysql_fetch_assoc($result);
+
+        if($data['parent_code'] == "")
+        {
+            $parentCode = $course;
+        }
+        else
+        {
+            $parentCode = $data['parent_code'];
+        }
+
+        if(strlen($parentCode) == 1) $parentCode = '00'.$parentCode;
+        if(strlen($parentCode) == 2) $parentCode = '0'.$parentCode;
+        // echo "parent".$parentCode;
+        return $parentCode;
+    }
+
     static function getCourseInfo($code){
         $query = "SELECT * FROM course  
                   WHERE code = '$code'";
@@ -26,8 +56,8 @@ class Tools{
         //init ---------------------------------------------------------------------
         global $uidReset, $loginFailed, $_configuration;
 
-        $main_user_table = Database :: get_main_table(TABLE_MAIN_USER);
-        $main_admin_table = Database :: get_main_table(TABLE_MAIN_ADMIN);
+        $main_user_table     = Database :: get_main_table(TABLE_MAIN_USER);
+        $main_admin_table    = Database :: get_main_table(TABLE_MAIN_ADMIN);
         $track_e_login_table = Database :: get_statistic_table(TABLE_STATISTIC_TRACK_E_LOGIN);
 
         //logic --------------------------------------------------------------------

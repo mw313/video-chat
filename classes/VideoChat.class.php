@@ -1,32 +1,6 @@
 <?php
 
 class VideoChat{
-    static function getParentCode($course)
-    {
-        $parentCode = "";
-        $query = "SELECT `parent_code` FROM chat_course_merge
-                    JOIN `current_semester` ON
-                    chat_course_merge.`year` = `current_semester`.`year` AND chat_course_merge.`semester` = `current_semester`.`semester`
-                WHERE child_code = '$course' and active = '1'";    
-        
-        $result = api_sql_query($query, __FILE__, __LINE__);
-        $data   = mysql_fetch_assoc($result);
-
-        if($data['parent_code'] == "")
-        {
-            $parentCode = $course;
-        }
-        else
-        {
-            $parentCode = $data['parent_code'];
-        }
-
-        if(strlen($parentCode) == 1) $parentCode = '00'.$parentCode;
-        if(strlen($parentCode) == 2) $parentCode = '0'.$parentCode;
-        // echo "parent".$parentCode;
-        return $parentCode;
-    }
-
     static function savePresence()
     {
         $user_id = $_SESSION['_user']['user_id'];
@@ -77,7 +51,7 @@ class VideoChat{
             $i++;
         }
         Display::display_header();
-        Reports::view("views/sessionList.php", compact('sessions'));
+        DisplayTools::view("views/sessionList.php", compact('sessions'));
         Display::display_footer();
     }
 
