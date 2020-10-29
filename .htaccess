@@ -1,0 +1,4 @@
+RewriteEngine On
+RewriteCond %{SERVER_PORT} 80
+RewriteCond %{REQUEST_URI} main/videoChat
+RewriteRule ^(.*)$ https://www.ikvu.ac.ir/$1 [R,L]

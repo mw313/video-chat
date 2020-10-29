@@ -1,0 +1,62 @@
+.alert {
+	position: relative;
+	padding: .75rem 1.25rem;
+	margin-bottom: 1rem;
+	border: 1px solid transparent;
+	border-radius: .25rem;
+}
+
+.alert-danger {
+	color: #721c24;
+	background-color: #f8d7da;
+	border-color: #f5c6cb;
+}
+
+.w-70{
+    width: 70%;
+    margin: 20px auto;
+}
+
+.w-60{
+    width: 60%;
+    margin: 20px auto;
+}
+
+.w-50{
+    width: 50%;
+    margin: 20px auto;
+    text-align: center;
+}
+
+.re-login{
+    margin: 30px auto;
+    display: block;
+}
+
+.modal-info .modal-header{
+    background-color: #33b5e5 !important;
+    color: #FFF;
+    font-family: "sahel";
+}
+
+.popover .btn{
+    color: #111 !important;
+}
+#time, select{
+    height: 34px !important;
+}
+th{
+    text-align: right !important;
+}
+.grid-col{
+    max-width: 250px;
+    white-space: initial;
+}
+
+.bg-disabled{
+    background-color: #bbb;
+}
+
+label{
+    font-family: "sahel";
+}
