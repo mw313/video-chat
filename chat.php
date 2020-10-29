@@ -9,7 +9,7 @@ include("./config.php");
 VideoChat::handleSSL();
 VideoChat::checkLogin();
 VideoChat::checkClassStarted();
-// VideoChat::savePresence();
-// VideoChat::displayVideoChat();
+VideoChat::savePresence();
+VideoChat::displayVideoChat();
 
 ?>

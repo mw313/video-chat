@@ -1,10 +1,9 @@
 <?php
-error_reporting(E_ERROR);
-ini_set('display_errors', 1);
+// error_reporting(E_ERROR);
+// ini_set('display_errors', 1);
 
 include_once('../inc/global.inc.php');
-include_once('./classes/Date.class.php');
-include_once('./classes/Reports.class.php');
+include("./config.php");
 
 Display::display_header();
 Reports::displayMenu();

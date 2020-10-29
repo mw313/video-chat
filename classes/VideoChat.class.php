@@ -1,8 +1,11 @@
 <?php
 
 class VideoChat{
+    static private $openClass = false;
     static function savePresence()
     {
+        if(!self::$openClass) return true;
+
         $user_id = $_SESSION['_user']['user_id'];
         $code    = $_GET['cidReq'];
 
@@ -39,10 +42,10 @@ class VideoChat{
 
     static function checkClassStarted(){
         $course = $_GET['cidReq'];
-        $user = $_SESSION['_user']['user_id'];
+        $user   = $_SESSION['_user']['user_id'];
         $userCourse = self::getRegisterInfo($code, $user);
         // print_r($userCourse);
-        $code = Tools::getParentCode($course);
+        $code     = Tools::getParentCode($course);
         $sessions = Reports::getCourseSessions($code, $userCourse['year'], $userCourse['semester'], $userCourse['group']);
 
         $i = 0;
@@ -50,8 +53,51 @@ class VideoChat{
             $sessions['sessions'][$i]['presense'] = Reports::getUserSessionPresence($course, $session, $user, $session['cs_group']);
             $i++;
         }
+
+        $message = "";
+
+        if(count($sessions['sessions']) == 0){
+            $message = 'در این درس جلسه ای ثبت نشده است!!';
+        }else{
+            $i = 0;
+            foreach($sessions['sessions'] as $session){
+                // $sessions['sessions'][$i]['presense'] = Reports::getUserSessionPresence($course, $session, $user, $session['cs_group']);
+                $i++;
+
+                // echo $session['cs_end']."-".$sessions['time'];
+                // echo $session['cs_date']."-".$sessions['persian_date']."<br/>";
+                if(Tools::getEnNumbers($session['cs_date']) < $sessions['persian_date']){
+                    continue;
+                }
+                else if(Tools::getEnNumbers($session['cs_date']) == $sessions['persian_date']){
+                    if(Tools::addHours($session['cs_start'], BEFORE_ALLOWED_TIME, 'minus') > $sessions['time'])
+                    {
+                        $message = Tools::getFaNumbers("ساعت برگزاری جلسه امروز: <b>$session[cs_start]</b>");
+                        break;
+                    }
+                    else if(Tools::getEnNumbers($session['cs_end']) < $sessions['time']){
+                        continue; // Next Session
+                    }else{
+                        self::$openClass = true;
+                        break;
+                    }
+                }
+                else{
+                    $message = Tools::getFaNumbers("تاریخ جلسه بعد: <b>$session[cs_date]</b> ساعت <b>$session[cs_start]</b>");
+                    break;
+                }
+            }
+
+            $message = '<div class="alert alert-success" style="text-align: center; padding: 20px; width: 700px; margin: 10px auto;"> 
+                            '.$message.'  
+                        </div>';
+        }
+
+        if(self::$openClass) return;
+
         Display::display_header();
-        DisplayTools::view("views/sessionList.php", compact('sessions'));
+        // DisplayTools::view("views/sessionList.php", compact('sessions'));
+        DisplayTools::view("views/session.php", compact('sessions', 'message'));
         Display::display_footer();
     }
 
@@ -90,6 +136,8 @@ class VideoChat{
     }
 
     static function displayVideoChat(){
+        if(!self::$openClass) return true;
+        
         $userData    = Tools::getUserInfo($_SESSION['_user']['user_id']);
         $code        = Tools::getParentCode($_GET['cidReq']);
         $course_info = Tools::getCourseInfo($code);

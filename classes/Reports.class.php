@@ -40,28 +40,28 @@ class Reports{
     }
 
     static public function displayMenu(){
-        Tools::view("views/modules/menu.php");
+        DisplayTools::view("views/modules/menu.php");
     }
 
     static public function displayActivation(){
         $courses = self::getOnlineCourses();
         $modal = self::displayModal();
         // print_r($courses);
-        Tools::view("views/modules/activation.php", compact('courses', 'modal'));
+        DisplayTools::view("views/modules/activation.php", compact('courses', 'modal'));
     }
 
     static public function displayCalendar(){
         $sessions = self::getCourseSessions();
         $modal = self::displayModal();
         // print_r($courses);
-        Tools::view("views/modules/courseSessions.php", compact('sessions', 'modal'));
+        DisplayTools::view("views/modules/courseSessions.php", compact('sessions', 'modal'));
     }
 
     static public function displayTalfigh(){
         $courses = self::getOnlineCourses();
         $modal = self::displayModal();
         // print_r($courses);
-        Tools::view("views/modules/activation.php", compact('courses', 'modal'));
+        DisplayTools::view("views/modules/activation.php", compact('courses', 'modal'));
     }
 
     static public function displayReport(){
@@ -70,19 +70,19 @@ class Reports{
         $sessions = self::getSessionsPresence($sessions);
         $modal = self::displayModal();
         // print_r($courses);
-        Tools::view("views/modules/coursePresence.php", compact('sessions', 'modal'));
+        DisplayTools::view("views/modules/coursePresence.php", compact('sessions', 'modal'));
     }
 
     static public function displayModal(){
         $message = "";
-        foreach(self::$messages as $m){
+        foreach(Tools::$messages as $m){
 
             $message .= "<div class='alert alert-$m[type]'>$m[message]</div>";
         }
         $title = "پیغام سیستم";
         // print_r($courses);
         if($message != "")
-            $result = Tools::view("views/modules/modal.php", compact('message', 'title'), false);
+            $result = DisplayTools::view("views/modules/modal.php", compact('message', 'title'), false);
         else
             $result = "";
         return $result;
@@ -171,7 +171,7 @@ class Reports{
         }
 
         // print_r($courseAll);
-        self::$messages = array();
+        Tools::$messages = array();
         foreach($courseAll as $course){
             $sql = "UPDATE `dokeos_$course`.`tool` 
                     SET visibility = '$check' 
@@ -180,7 +180,7 @@ class Reports{
             $affected = mysql_affected_rows();
             if($affected > 0){
                 $type = ($check==1)?'<span class="badge badge-success"> فعال </span>':'<span class="badge badge-danger"> غیرفعال </span>';
-                self::$messages[] = array('message'=>"کلاس آنلاین تصویری درس «{$course}» {$type} گردید!!", 'type'=>'success');
+                Tools::$messages[] = array('message'=>"کلاس آنلاین تصویری درس «{$course}» {$type} گردید!!", 'type'=>'success');
             }
         }
     }
