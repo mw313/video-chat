@@ -31,7 +31,7 @@
             <div class="alert alert-primary" style="width: 700px; margin: 10px auto;">
                 کاربر محترم «<?=$_SESSION['_user']['firstName']." ".$_SESSION['_user']['lastName'] ?>» <br/>
                 با سلام <br/>
-                امکان ورود به کلاس 10 دقیقه قبل از شروع جلسه فعال می شود. <br/>
+                دسترسی ورود به کلاس، 10 دقیقه قبل از شروع جلسه فعال می شود. <br/>
                 در صورت تاخیر یک ربع، برای شما غیبت ثبت می گردد. 
             </div>
             <?=$message ?>

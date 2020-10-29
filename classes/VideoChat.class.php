@@ -60,34 +60,38 @@ class VideoChat{
             $message = 'در این درس جلسه ای ثبت نشده است!!';
         }else{
             $i = 0;
+            $todayNext = false;
             foreach($sessions['sessions'] as $session){
                 // $sessions['sessions'][$i]['presense'] = Reports::getUserSessionPresence($course, $session, $user, $session['cs_group']);
                 $i++;
 
                 // echo $session['cs_end']."-".$sessions['time'];
+                // echo $session['cs_end']."-".$sessions['time'];
                 // echo $session['cs_date']."-".$sessions['persian_date']."<br/>";
                 if(Tools::getEnNumbers($session['cs_date']) < $sessions['persian_date']){
                     continue;
                 }
-                else if(Tools::getEnNumbers($session['cs_date']) == $sessions['persian_date']){
+                else if(Tools::getEnNumbers($session['cs_date']) == $sessions['persian_date'] && $todayNext == false){
                     if(Tools::addHours($session['cs_start'], BEFORE_ALLOWED_TIME, 'minus') > $sessions['time'])
                     {
                         $message = Tools::getFaNumbers("ساعت برگزاری جلسه امروز: <b>$session[cs_start]</b>");
                         break;
                     }
                     else if(Tools::getEnNumbers($session['cs_end']) < $sessions['time']){
-                        continue; // Next Session
+                        $todayNext = true;
                     }else{
                         self::$openClass = true;
                         break;
                     }
                 }
                 else{
+                    // echo 222;
                     $message = Tools::getFaNumbers("تاریخ جلسه بعد: <b>$session[cs_date]</b> ساعت <b>$session[cs_start]</b>");
                     break;
                 }
             }
 
+            if($message != "")
             $message = '<div class="alert alert-success" style="text-align: center; padding: 20px; width: 700px; margin: 10px auto;"> 
                             '.$message.'  
                         </div>';
@@ -137,7 +141,7 @@ class VideoChat{
 
     static function displayVideoChat(){
         if(!self::$openClass) return true;
-        
+
         $userData    = Tools::getUserInfo($_SESSION['_user']['user_id']);
         $code        = Tools::getParentCode($_GET['cidReq']);
         $course_info = Tools::getCourseInfo($code);
